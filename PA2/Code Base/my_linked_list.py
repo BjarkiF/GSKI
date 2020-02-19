@@ -14,7 +14,7 @@ class LinkedList:
         while node is not None:
             ret_string += str(node.data) + ' '
             node = node.next
-        return ret_string
+        return ret_string[:-1]
 
     def push_back(self, data):
         new_node = Node(data)
