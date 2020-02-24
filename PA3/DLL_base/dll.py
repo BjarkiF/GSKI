@@ -45,7 +45,18 @@ class DLL:
             new_node.next = self._curr
         self._curr = new_node
 
- # TODO: myndast loop hér - curr.next bendir alltaf á sjálft sig og fer í hring
+    def _insert_tail(self, value):      # Notað í sort fallinu
+        new_node = Node(value)
+        new_node.prev = self._tail
+        self._tail.next = new_node
+        self._tail = new_node
+
+    def _insert_head(self, value):      # Notað í sort fallinu
+        new_node = Node(value)
+        new_node.next = self._head
+        self._head.prev = new_node
+        self._heaf = new_node
+
     def remove(self):
         if self._curr is None:
             return
@@ -57,12 +68,12 @@ class DLL:
                 return
             elif self._curr.next is  None:
                 self._curr.prev.next = None
-                self._curr.prev = self._tail
+                self._tail = self._curr.prev
                 self._curr = self._curr.prev
                 return
             elif self._curr.prev is None:
                 self._curr.next.prev = None
-                self._curr.next = self._head
+                self._head = self._curr.next
             else:
                 self._curr.prev.next = self._curr.next
                 self._curr.next.prev = self._curr.prev
@@ -76,13 +87,13 @@ class DLL:
             return self._curr.data
 
     def move_to_next(self):
-        if self._curr.next is None:
+        if self._curr is None or self._curr.next is None:
             return
         else:
             self._curr = self._curr.next
 
     def move_to_prev(self):
-        if self._curr.prev is None:
+        if self._curr is None or self._curr.prev is None:
             return
         else:
             self._curr = self._curr.prev
@@ -102,24 +113,56 @@ class DLL:
             pos_count += 1
         self._curr = node
 
+    def remove_all(self, value):
+        node = self._head
+        temp_curr = self._curr
+        while node is not None:
+            if node.data == value:
+                if node == self._curr:
+                    temp_curr = self._head
+                self._curr = node
+                self.remove()
+            node = node.next
+        self._curr = temp_curr
 
-dlist = DLL()
-dlist.insert(1)
-dlist.insert(2)
-dlist.insert(3)
-dlist.insert(4)
-print(dlist)
-dlist.remove()
-dlist.move_to_prev()
-dlist.move_to_prev()
-dlist.move_to_next()
-dlist.remove()
-print(dlist)
-dlist.move_to_pos(0)
-dlist.insert(10)
-dlist.insert(11)
-dlist.insert(12)
-dlist.move_to_pos(15)
-dlist.insert(13)
-dlist.insert(14)
-print(dlist)
+    def reverse(self):
+        rev_list = DLL()
+        node = self._head
+        while node is not None:
+            rev_list.insert(node.data)
+            node = node.next
+        self._head = rev_list._head
+
+    def sort(self):
+        node = self._head
+        sorted_list = DLL()
+        if node.data > node.next.data:
+            sorted_list.insert(node.data)
+            sorted_list.insert(node.next.data)
+        elif node.data <= node.next.data:
+            sorted_list.insert(node.next.data)
+            sorted_list.insert(node.data)
+        node = node.next.next
+        while node is not None:
+            sorted_list._curr = sorted_list._head
+            sorted_node = sorted_list._head
+            new_node = Node(node.data)
+            while sorted_node is not None:
+                if sorted_list._head.data > new_node.data:
+                    sorted_list._head.prev = new_node
+                    new_node.next = sorted_list._head
+                    sorted_list._head = new_node
+                    break
+                elif sorted_list._tail.data < new_node.data:
+                    sorted_list._tail.next = new_node
+                    new_node.prev = sorted_list._tail
+                    sorted_list._tail = new_node
+                    break
+                elif sorted_node.data <= new_node.data <= sorted_node.next.data:
+                    sorted_list._curr = sorted_node.next
+                    sorted_list.insert(new_node.data)
+                    break
+                else:
+                    sorted_node = sorted_node.next
+            node = node.next
+        self._head = sorted_list._head
