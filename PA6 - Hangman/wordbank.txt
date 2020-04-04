@@ -1,0 +1,9 @@
+python
+data
+structure
+list
+queue
+stack
+array
+binary
+tree
